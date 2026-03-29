@@ -4,7 +4,7 @@ import Modal from "@/components/Modal";
 import { Plus, Trash2 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { roadmapRepository } from "@/repositories";
+import { roadmapRepository, progressRepository } from "@/repositories";
 import type { Roadmap } from "@/repositories/types";
 import { useRouter } from "next/router";
 
@@ -16,6 +16,7 @@ export default function RoadmindDashboard() {
   const [loading, setLoading] = useState(false);
 
   const [roadminds, setRoadminds] = useState<Roadmap[]>([]);
+  const [progressMap, setProgressMap] = useState<Record<string, number>>({});
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -34,6 +35,18 @@ export default function RoadmindDashboard() {
     const fetchRoadminds = async () => {
       const data = await roadmapRepository.getAllByUserId(userId);
       setRoadminds(data);
+      // Load progress untuk semua roadmap sekaligus
+      const entries = await Promise.all(
+        data.map(async (r) => {
+          const p = await progressRepository.get(userId, r.id);
+          const pct =
+            r.roadmap.length > 0 && p
+              ? Math.round((p.completedDays.length / r.roadmap.length) * 100)
+              : 0;
+          return [r.id, pct] as [string, number];
+        }),
+      );
+      setProgressMap(Object.fromEntries(entries));
     };
     fetchRoadminds();
   }, [userId, showModal, deleteId]);
@@ -128,6 +141,18 @@ export default function RoadmindDashboard() {
                 <p className="text-xs text-[#9b9a97] truncate mt-0.5">
                   {r.subJudul}
                 </p>
+                {/* Mini progress bar */}
+                <div className="flex items-center gap-2 mt-1.5">
+                  <div className="flex-1 h-1 bg-[#e9e9e7] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#37352f] rounded-full transition-all duration-300"
+                      style={{ width: `${progressMap[r.id] ?? 0}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] text-[#9b9a97] flex-shrink-0">
+                    {progressMap[r.id] ?? 0}%
+                  </span>
+                </div>
               </div>
               <button
                 onClick={() => setDeleteId(r.id)}

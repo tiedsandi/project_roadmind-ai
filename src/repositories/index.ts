@@ -11,12 +11,14 @@ import type { ICheatSheetRepository } from "./ICheatSheetRepository";
 import type { ILearningLadderRepository } from "./ILearningLadderRepository";
 import type { IResourceRepository } from "./IResourceRepository";
 import type { IQuizRepository } from "./IQuizRepository";
+import type { IProgressRepository } from "./IProgressRepository";
 import { FirebaseRoadmapRepository } from "./firebase/FirebaseRoadmapRepository";
 import { FirebaseLearningPlanRepository } from "./firebase/FirebaseLearningPlanRepository";
 import { FirebaseCheatSheetRepository } from "./firebase/FirebaseCheatSheetRepository";
 import { FirebaseLearningLadderRepository } from "./firebase/FirebaseLearningLadderRepository";
 import { FirebaseResourceRepository } from "./firebase/FirebaseResourceRepository";
 import { FirebaseQuizRepository } from "./firebase/FirebaseQuizRepository";
+import { FirebaseProgressRepository } from "./firebase/FirebaseProgressRepository";
 
 export const roadmapRepository: IRoadmapRepository =
   new FirebaseRoadmapRepository();
@@ -34,3 +36,6 @@ export const resourceRepository: IResourceRepository =
   new FirebaseResourceRepository();
 
 export const quizRepository: IQuizRepository = new FirebaseQuizRepository();
+
+export const progressRepository: IProgressRepository =
+  new FirebaseProgressRepository();

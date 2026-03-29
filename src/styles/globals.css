@@ -1,10 +1,38 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: #ffffff;
   color: #37352f;
   font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Text selection */
+::selection {
+  background: #37352f18;
+  color: #37352f;
+}
+
+/* Custom scrollbar (webkit) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #e9e9e7;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d1d0cd;
 }
 
 /* Notion-style prose untuk konten markdown */
@@ -13,3 +41,10 @@ body {
 .rm-prose ol { list-style: decimal; padding-left: 1.25rem; margin-bottom: 0.5rem; }
 .rm-prose strong { font-weight: 600; }
 .rm-prose code { background: #f1f1ef; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.85em; }
+
+/* Focus ring yang konsisten */
+:focus-visible {
+  outline: 2px solid #37352f40;
+  outline-offset: 2px;
+  border-radius: 4px;
+}

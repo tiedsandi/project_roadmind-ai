@@ -133,3 +133,13 @@ export interface Quiz {
 }
 
 export type CreateQuizInput = Omit<Quiz, "id" | "createdAt">;
+
+// ─── Progress Tracking ────────────────────────────────────────────────────────
+
+export interface RoadmapProgress {
+  id: string; // "{userId}_{roadmapId}"
+  userId: string;
+  roadmapId: string;
+  completedDays: number[];
+  updatedAt: Date;
+}
