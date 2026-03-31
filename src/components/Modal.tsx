@@ -42,7 +42,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-6 h-6 flex items-center justify-center rounded-md text-[#9b9a97] hover:text-[#37352f] hover:bg-[#f7f7f5] transition-colors text-lg leading-none"
+          className="absolute top-4 right-4 w-6 h-6 flex items-center justify-center rounded-md text-[#71717a] hover:text-zinc-900 hover:bg-[#fafafa] transition-colors text-lg leading-none"
           aria-label="Tutup"
         >
           ×

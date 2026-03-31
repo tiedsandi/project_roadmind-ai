@@ -1,46 +1,40 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-
 import { GoogleGenAI } from "@google/genai";
-import { quizRepository } from "@/repositories";
 import type { QuizQuestion } from "@/repositories/types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-
-interface GeneratedQuiz {
-  questions: QuizQuestion[];
-}
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<{ id: string } | { message: string; raw?: string }>,
+  res: NextApiResponse<
+    { questions: QuizQuestion[] } | { message: string; raw?: string }
+  >,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
   const {
-    topik,
+    courseTitle,
+    levelName,
     jumlah = 10,
-    userId,
   } = req.body as {
-    topik: string;
+    courseTitle: string;
+    levelName: string;
     jumlah?: number;
-    userId: string;
   };
 
-  if (!topik || !userId) {
-    return res.status(400).json({ message: "topik dan userId wajib diisi" });
+  if (!courseTitle || !levelName) {
+    return res
+      .status(400)
+      .json({ message: "courseTitle dan levelName wajib diisi" });
   }
 
   const safeJumlah = Math.min(Math.max(Number(jumlah) || 10, 5), 20);
 
-  const prompt = `
-Buat ${safeJumlah} soal pilihan ganda tentang "${topik}".
-Soal harus menguji pemahaman konsep, bukan hafalan semata.
-Tulis dalam Bahasa Indonesia.
-
-Output HARUS valid JSON tanpa backticks atau komentar apapun.
-Format:
+  const prompt = `Buat ${safeJumlah} soal pilihan ganda untuk topik "${courseTitle} — ${levelName}".
+Soal harus menguji pemahaman konsep, bukan hafalan. Tulis dalam Bahasa Indonesia.
+Output HARUS valid JSON tanpa backticks atau komentar:
 {
   "questions": [
     {
@@ -51,12 +45,11 @@ Format:
       "penjelasan": "string (kenapa jawaban ini benar)"
     }
   ]
-}
-`;
+}`;
 
   try {
     const response = await ai.models.generateContent({
-      model: "models/gemini-2.5-flash",
+      model: process.env.AI_MODEL ?? "gemini-2.5-flash",
       contents: prompt,
     });
 
@@ -66,9 +59,9 @@ Format:
 
     const cleanText = response.text.replace(/```json|```/gi, "").trim();
 
-    let quizData: GeneratedQuiz;
+    let parsed: { questions: QuizQuestion[] };
     try {
-      quizData = JSON.parse(cleanText);
+      parsed = JSON.parse(cleanText);
     } catch {
       return res.status(500).json({
         message: "Gagal parsing JSON dari AI",
@@ -76,16 +69,9 @@ Format:
       });
     }
 
-    const id = await quizRepository.create({
-      topik,
-      jumlah: quizData.questions.length,
-      questions: quizData.questions,
-      userId,
-    });
-
-    return res.status(200).json({ id });
+    return res.status(200).json({ questions: parsed.questions });
   } catch (err) {
-    console.error("Error:", err);
+    console.error("generateQuiz error:", err);
     return res.status(500).json({
       message: err instanceof Error ? err.message : "Unknown error",
     });

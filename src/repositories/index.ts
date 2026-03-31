@@ -1,41 +1,20 @@
-// Satu-satunya file yang perlu diubah saat ganti database provider.
-//
-// Misal ganti ke PostgreSQL:
-//   1. Buat: src/repositories/postgres/PostgresRoadmapRepository.ts
-//   2. Ubah baris import & export di bawah ini
-//   3. Selesai — tidak ada file lain yang perlu disentuh.
+import type { ICourseRepository } from "./ICourseRepository";
+import type { ILevelRepository } from "./ILevelRepository";
+import type { ISectionRepository } from "./ISectionRepository";
+import type { ISubscriptionRepository } from "./ISubscriptionRepository";
+import { FirebaseCourseRepository } from "./firebase/FirebaseCourseRepository";
+import { FirebaseLevelRepository } from "./firebase/FirebaseLevelRepository";
+import { FirebaseSectionRepository } from "./firebase/FirebaseSectionRepository";
+import { FirebaseSubscriptionRepository } from "./firebase/FirebaseSubscriptionRepository";
 
-import type { IRoadmapRepository } from "./IRoadmapRepository";
-import type { ILearningPlanRepository } from "./ILearningPlanRepository";
-import type { ICheatSheetRepository } from "./ICheatSheetRepository";
-import type { ILearningLadderRepository } from "./ILearningLadderRepository";
-import type { IResourceRepository } from "./IResourceRepository";
-import type { IQuizRepository } from "./IQuizRepository";
-import type { IProgressRepository } from "./IProgressRepository";
-import { FirebaseRoadmapRepository } from "./firebase/FirebaseRoadmapRepository";
-import { FirebaseLearningPlanRepository } from "./firebase/FirebaseLearningPlanRepository";
-import { FirebaseCheatSheetRepository } from "./firebase/FirebaseCheatSheetRepository";
-import { FirebaseLearningLadderRepository } from "./firebase/FirebaseLearningLadderRepository";
-import { FirebaseResourceRepository } from "./firebase/FirebaseResourceRepository";
-import { FirebaseQuizRepository } from "./firebase/FirebaseQuizRepository";
-import { FirebaseProgressRepository } from "./firebase/FirebaseProgressRepository";
+export const courseRepository: ICourseRepository =
+  new FirebaseCourseRepository();
 
-export const roadmapRepository: IRoadmapRepository =
-  new FirebaseRoadmapRepository();
+export const levelRepository: ILevelRepository =
+  new FirebaseLevelRepository();
 
-export const learningPlanRepository: ILearningPlanRepository =
-  new FirebaseLearningPlanRepository();
+export const sectionRepository: ISectionRepository =
+  new FirebaseSectionRepository();
 
-export const cheatSheetRepository: ICheatSheetRepository =
-  new FirebaseCheatSheetRepository();
-
-export const learningLadderRepository: ILearningLadderRepository =
-  new FirebaseLearningLadderRepository();
-
-export const resourceRepository: IResourceRepository =
-  new FirebaseResourceRepository();
-
-export const quizRepository: IQuizRepository = new FirebaseQuizRepository();
-
-export const progressRepository: IProgressRepository =
-  new FirebaseProgressRepository();
+export const subscriptionRepository: ISubscriptionRepository =
+  new FirebaseSubscriptionRepository();

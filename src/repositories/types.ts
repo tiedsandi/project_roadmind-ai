@@ -1,145 +1,102 @@
-// Semua shared types untuk data model.
-// Tidak ada import dari Firebase/PostgreSQL di sini — murni TypeScript.
+// ─── Course Platform — shared types ──────────────────────────────────────────
 
-// ─── Roadmap ────────────────────────────────────────────────────────────────
-
-export interface RoadmapItem {
-  hari: number;
-  kegiatan: string;
-}
-
-export interface Roadmap {
+export interface Course {
   id: string;
-  judul: string;
-  subJudul: string;
-  roadmap: RoadmapItem[];
-  userId: string;
+  title: string;
+  description: string;
+  creatorId: string;
+  creatorName: string;
+  subscriberCount: number;
+  levelCount: number;
   createdAt: Date;
 }
 
-export type CreateRoadmapInput = Omit<Roadmap, "id" | "createdAt">;
+export type CreateCourseInput = Omit<
+  Course,
+  "id" | "createdAt" | "subscriberCount" | "levelCount"
+>;
 
-// ─── Learning Plan (20-Hour) ─────────────────────────────────────────────────
-
-export interface LearningSession {
-  nomor: number;
-  tujuan: string;
-  aktivitas: string;
-  resource: string;
-  review: string;
-}
-
-export interface LearningPlan {
+export interface Level {
   id: string;
-  judul: string;
-  deskripsi: string;
-  topik: string;
-  level: string;
-  totalJam: number;
-  sesi: LearningSession[];
-  userId: string;
-  createdAt: Date;
+  courseId: string;
+  name: string;
+  order: number;
 }
 
-export type CreateLearningPlanInput = Omit<LearningPlan, "id" | "createdAt">;
+export type CreateLevelInput = Omit<Level, "id">;
 
-// ─── Cheat Sheet ─────────────────────────────────────────────────────────────
+export type SectionType =
+  | "learning-plan"
+  | "cheat-sheet"
+  | "resources"
+  | "quiz-config";
 
-export interface CheatSheetKonsep {
-  nama: string;
-  penjelasan: string;
-  contoh: string;
+export interface LearningPlanContent {
+  sesi: Array<{
+    nomor: number;
+    kegiatan: string;
+    durasi_menit: number;
+    resource: string;
+    review: string;
+  }>;
 }
 
-export interface CheatSheet {
-  id: string;
-  judul: string;
-  topik: string;
+export interface CheatSheetContent {
   ringkasan: string;
-  konsepUtama: CheatSheetKonsep[];
+  konsep: Array<{
+    nama: string;
+    penjelasan: string;
+    contoh: string;
+  }>;
   tips: string[];
   kesalahanUmum: string[];
-  userId: string;
-  createdAt: Date;
 }
 
-export type CreateCheatSheetInput = Omit<CheatSheet, "id" | "createdAt">;
-
-// ─── Learning Ladder ──────────────────────────────────────────────────────────
-
-export interface LadderLevel {
-  level: number;
-  nama: string;
-  deskripsi: string;
-  milestone: string;
-  skills: string[];
-  project: string;
+export interface ResourcesContent {
+  resources: Array<{
+    nama: string;
+    jenis: "Buku" | "Video" | "Kursus" | "Artikel" | "Tokoh";
+    alasan: string;
+    link?: string;
+  }>;
 }
 
-export interface LearningLadder {
+export interface QuizConfigContent {
+  kisi_kisi: string[];
+}
+
+export type SectionContent =
+  | LearningPlanContent
+  | CheatSheetContent
+  | ResourcesContent
+  | QuizConfigContent;
+
+export interface Section {
   id: string;
-  topik: string;
-  levels: LadderLevel[];
-  userId: string;
-  createdAt: Date;
+  courseId: string;
+  levelId: string;
+  type: SectionType;
+  content: SectionContent | null;
+  generatedAt: Date | null;
 }
 
-export type CreateLearningLadderInput = Omit<
-  LearningLadder,
-  "id" | "createdAt"
->;
-
-// ─── Resource Finder ─────────────────────────────────────────────────────────
-
-export type ResourceType = "Buku" | "Video" | "Kursus" | "Artikel" | "Tokoh";
-
-export interface Resource {
-  nama: string;
-  jenis: ResourceType;
-  alasan: string;
-  link?: string;
-}
-
-export interface ResourceCollection {
-  id: string;
-  topik: string;
-  resources: Resource[];
-  userId: string;
-  createdAt: Date;
-}
-
-export type CreateResourceCollectionInput = Omit<
-  ResourceCollection,
-  "id" | "createdAt"
->;
-
-// ─── Quiz ─────────────────────────────────────────────────────────────────────
+export type CreateSectionInput = {
+  courseId: string;
+  levelId: string;
+  type: SectionType;
+};
 
 export interface QuizQuestion {
   nomor: number;
   pertanyaan: string;
-  pilihan: string[]; // 4 pilihan: A, B, C, D
-  jawaban: string; // "A" | "B" | "C" | "D"
+  pilihan: string[];
+  jawaban: string;
   penjelasan: string;
 }
 
-export interface Quiz {
+export interface Subscription {
   id: string;
-  topik: string;
-  jumlah: number;
-  questions: QuizQuestion[];
   userId: string;
-  createdAt: Date;
-}
-
-export type CreateQuizInput = Omit<Quiz, "id" | "createdAt">;
-
-// ─── Progress Tracking ────────────────────────────────────────────────────────
-
-export interface RoadmapProgress {
-  id: string; // "{userId}_{roadmapId}"
-  userId: string;
-  roadmapId: string;
-  completedDays: number[];
-  updatedAt: Date;
+  courseId: string;
+  subscribedAt: Date;
 }
