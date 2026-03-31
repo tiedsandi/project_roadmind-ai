@@ -243,7 +243,10 @@ export default function CreateCoursePage() {
         },
       ]);
     } catch (e) {
-      setGenError(e instanceof Error ? e.message : "Error");
+      const msg = e instanceof Error ? e.message : "Error";
+      setGenError(
+        msg.startsWith("RATE_LIMIT:") ? msg.replace("RATE_LIMIT: ", "") : msg,
+      );
     } finally {
       setGenerating(false);
     }
@@ -285,11 +288,15 @@ export default function CreateCoursePage() {
       applyStructure(data.structure);
       setMessages((m) => [...m, { role: "ai", text: data.reply }]);
     } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      const isRateLimit = msg.includes("RATE_LIMIT");
       setMessages((m) => [
         ...m,
         {
           role: "ai",
-          text: "Maaf, terjadi kesalahan. Coba lagi.",
+          text: isRateLimit
+            ? "⚠️ Kuota AI gratis sementara habis. Tunggu beberapa menit lalu coba lagi ya."
+            : "Maaf, terjadi kesalahan. Coba lagi.",
         },
       ]);
     } finally {
@@ -423,7 +430,17 @@ export default function CreateCoursePage() {
               />
             </div>
 
-            {genError && <p className="text-xs text-red-500">{genError}</p>}
+            {genError && (
+              <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800">
+                <span className="text-base flex-shrink-0">⚠️</span>
+                <div>
+                  <p className="text-xs font-semibold mb-0.5">
+                    Tidak bisa terhubung ke AI
+                  </p>
+                  <p className="text-xs leading-relaxed">{genError}</p>
+                </div>
+              </div>
+            )}
 
             <button
               onClick={handleGenerate}

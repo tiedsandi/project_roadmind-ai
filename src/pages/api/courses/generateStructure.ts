@@ -65,6 +65,16 @@ Output HARUS valid JSON tanpa backticks, markdown, atau komentar apapun:
     return res.status(200).json(parsed);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
+    const isRateLimit =
+      msg.includes("RESOURCE_EXHAUSTED") ||
+      msg.includes("429") ||
+      msg.includes("quota");
+    if (isRateLimit) {
+      return res.status(429).json({
+        message:
+          "RATE_LIMIT: Kuota AI gratis sementara habis. Coba lagi dalam beberapa menit.",
+      });
+    }
     return res.status(500).json({ message: msg });
   }
 }
